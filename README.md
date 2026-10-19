@@ -62,6 +62,17 @@ Full walkthrough with every tool and shortcut: **[docs/USAGE.md](docs/USAGE.md)*
 
 Mouse: wheel = zoom, `Space`+drag or middle button = pan, right click = context menu, `Shift`+click = add to selection, arrows = nudge (`Shift` = 10 px).
 
+## Let Claude do it (MCP + skill)
+
+`mcp-server/` is an MCP server that drives the real editor headlessly and hands the agent **annotated screenshots**, so it can slice a sheet, look at the result, fix giant/fragmented boxes, group sets and verify them — then export. Install in two lines (see [mcp-server/README.md](mcp-server/README.md)):
+
+```bash
+cd mcp-server && pip install -e . && playwright install chromium
+claude mcp add spritebench -- python -m spritebench_mcp
+```
+
+The bundled skill `.claude/skills/spritebench/` explains the workflow and the recipes that worked on real sheets.
+
 ## Run it yourself
 
 No build step. It is plain HTML + JavaScript:

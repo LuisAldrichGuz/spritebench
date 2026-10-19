@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spritebench-mcp"
+version = "0.1.0"
+description = "MCP server that lets Claude (or any MCP client) slice, review and catalog sprite sheets with Spritebench"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = ["mcp>=1.2", "playwright>=1.40"]
+
+[project.scripts]
+spritebench-mcp = "spritebench_mcp.server:main"
+
+[tool.setuptools]
+packages = ["spritebench_mcp"]
