@@ -1,0 +1,9 @@
+{
+  "name": "Spritebench.Runtime",
+  "rootNamespace": "Spritebench",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "autoReferenced": true
+}

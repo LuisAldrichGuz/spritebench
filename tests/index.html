@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Spritebench tests</title>
+<style>body{font:14px system-ui;background:#1b1b1b;color:#ddd;padding:20px}.ok{color:#5be37f}.bad{color:#ff6b6b}pre{white-space:pre-wrap}</style></head>
+<body><h1>Spritebench self-test</h1><pre id="out"></pre>
+<!-- the app needs its DOM hooks; we only load the logic layers -->
+<div style="display:none"><div id="cv"></div><div id="ctx"></div><div id="modal"></div><div id="toast"></div></div>
+<script src="../js/state.js"></script><script src="../js/slice.js"></script><script src="../js/actions.js"></script><script src="../js/export.js"></script><script src="../js/demo.js"></script>
+<script>
+const out = document.getElementById('out'); let pass = 0, fail = 0;
+const t = (name, cond) => { (cond ? pass++ : fail++); out.innerHTML += `<span class="${cond ? 'ok' : 'bad'}">${cond ? '✔' : '✘'}</span> ${name}\n`; };
+SB.scheduleSave = () => {};   // the test must not overwrite the app's autosave (same origin)
+(async () => {
+  const sh = await SB.addSheetDataUrl('demo.png', SB.demoSheet());
+  t('demo sheet is 224x128', sh.w === 224 && sh.h === 128);
+  const rects = SB.autoSlice(sh.id, { gap: 1 });
+  t('auto-slice finds the demo objects (23)', rects.length === 23);
+  SB.act.addSprites(rects, 'auto');
+  t('sprites created', SB.sprites().length === 23);
+  SB.undo(); t('undo removes them', SB.sprites().length === 0);
+  SB.redo(); t('redo brings them back', SB.sprites().length === 23);
+  const n = SB.act.findMirrors(true);
+  t('three mirrored chair pairs found', n === 3 && SB.project.sets.length === 3);
+  t('mirror duplicates replaced by flips', SB.sprites().length === 20);
+  const st = SB.project.sets[0], r = SB.resolveVariant(st, 'right');
+  t('right resolves to left flipped', r && r.flipX === true && r.sprite && r.sprite.id === st.variants[0].sprite);
+  const g = SB.gridSlice(sh.id, { cw: 16, ch: 16, trim: true, skipEmpty: true });
+  t('grid slice returns non-empty trimmed cells', g.length > 0 && g.every((b) => b[2] > b[0]));
+  const wb = SB.wand(sh.id, 10, 10, 0);
+  t('wand picks the object under the cursor', Array.isArray(wb) && wb[2] > wb[0]);
+  const bundle = await SB.exp.bundle({ texturePacker: true });
+  const cat = JSON.parse(new TextDecoder().decode(bundle.files[0].data));
+  t('catalog json has format + sheets + sprites + sets', cat.format === 'spritebench' && cat.sheets.length === 1 && cat.sprites.length === 20 && cat.sets.length === 3);
+  t('flip variant exported without sprite', cat.sets[0].variants.some((v) => v.flipOf === 'left' && v.flipX === true && !v.sprite));
+  const zip = SB.exp.zip(bundle.files); const head = new Uint8Array(await zip.slice(0, 4).arrayBuffer());
+  t('zip starts with PK', head[0] === 0x50 && head[1] === 0x4b);
+  out.innerHTML += `\n<b>${pass} passed, ${fail} failed</b>`;
+  document.title = fail ? 'FAIL' : 'PASS';
+})();
+</script></body></html>

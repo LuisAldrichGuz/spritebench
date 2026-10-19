@@ -1,0 +1,13 @@
+{
+  "name": "com.luisaldrichguz.spritebench",
+  "displayName": "Spritebench",
+  "version": "0.1.0",
+  "unity": "2021.3",
+  "description": "Imports Spritebench catalogs: slices the sprite sheet (pivots included) and builds a ScriptableObject with sets, flipped variants, footprints and custom properties.",
+  "keywords": ["sprites", "2d", "catalog", "furniture", "builder"],
+  "dependencies": {
+    "com.unity.2d.sprite": "1.0.0"
+  },
+  "author": { "name": "Luis Aldrich Guzmán" },
+  "license": "MIT"
+}
